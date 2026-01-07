@@ -513,7 +513,9 @@ void readSensors() {
     // Read LDR (MH Light Sensor Module)
     int ldrValue = analogRead(LDR_PIN);
     // Convert ADC value to light percentage (0-100%)
-    currentData.light = map(ldrValue, 0, 4095, 0, 100);
+    // NOTE: LDR module outputs HIGH when DARK, LOW when BRIGHT
+    // So we invert: 0 ADC = 100% light, 4095 ADC = 0% light
+    currentData.light = map(ldrValue, 0, 4095, 100, 0);
     
     // Timestamp
     currentData.timestamp = millis();
