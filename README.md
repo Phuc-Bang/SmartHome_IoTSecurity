@@ -1,244 +1,209 @@
-# ESP32 Smart Home IoT Security Analysis Project
+# 🏠 ESP32 Smart Home IoT Security
 
-## Mô tả dự án
-Dự án phân tích bảo mật IoT cho hệ thống Smart Home sử dụng ESP32-S3 với các cảm biến môi trường.
+<div align="center">
 
-## Thành phần phần cứng
-- **ESP32-S3 DevKit-C-1**: Vi điều khiển chính
-- **DHT11**: Cảm biến nhiệt độ và độ ẩm
-- **MH Light Sensor (LDR)**: Mô-đun cảm biến ánh sáng quang điện trở
-- **OLED 0.96" (SSD1306)**: Màn hình hiển thị I2C
-- **5x LED**: Đèn báo trạng thái và điều khiển
-- **Breadboard và dây nối**
+![ESP32](https://img.shields.io/badge/ESP32-S3-blue?style=for-the-badge&logo=espressif)
+![PlatformIO](https://img.shields.io/badge/PlatformIO-5.0+-orange?style=for-the-badge&logo=platformio)
+![Python](https://img.shields.io/badge/Python-3.9+-green?style=for-the-badge&logo=python)
+![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-## Sơ đồ kết nối
+**Dự án phân tích bảo mật IoT cho hệ thống Smart Home**
 
-### DHT11
-- VCC → 3.3V
-- GND → GND  
-- DATA → GPIO 4
+[Tính năng](#-tính-năng) • [Cài đặt](#-cài-đặt-nhanh) • [Tài liệu](#-tài-liệu) • [Bảo mật](#-phân-tích-bảo-mật)
 
-### MH Light Sensor (LDR)
-- VCC → 3.3V
-- GND → GND
-- AO → GPIO 1 (ADC1_CH0)
+</div>
 
-### OLED SSD1306
-- VCC → 3.3V
-- GND → GND
-- SDA → GPIO 14
-- SCL → GPIO 13
+---
 
-### LED Connections
-- **Status LED (Blue)**: GPIO 2 → 220Ω resistor → LED → GND
-- **WiFi LED (Green)**: GPIO 5 → 220Ω resistor → LED → GND  
-- **Sensor LED (Yellow)**: GPIO 6 → 220Ω resistor → LED → GND
-- **Alert LED (Red)**: GPIO 7 → 220Ω resistor → LED → GND
-- **Control LED (White)**: GPIO 8 → 220Ω resistor → LED → GND
+## 🎯 Giới Thiệu
 
-## Cài đặt và biên dịch
+Dự án demo hệ thống Smart Home với **ESP32-S3**, tích hợp phân tích bảo mật IoT. Hệ thống chứa các **lỗ hổng có chủ đích** để phục vụ mục đích giáo dục về an toàn thông tin.
 
-### Yêu cầu
-- PlatformIO IDE hoặc Arduino IDE
-- ESP32 board package
-- Các thư viện được liệt kê trong `platformio.ini`
+> ⚠️ **CẢNH BÁO**: Không sử dụng trong môi trường production!
 
-### Các bước cài đặt
-1. Clone repository này
-2. Mở project trong PlatformIO
-3. Cấu hình Wi-Fi credentials trong `include/config.h`
-4. Build và upload lên ESP32-S3
+---
 
+## ✨ Tính Năng
+
+| Tính Năng | Mô Tả |
+|-----------|-------|
+| 🌡️ **Sensor Monitoring** | Đọc nhiệt độ, độ ẩm (DHT11) và ánh sáng (LDR) |
+| 📺 **OLED Display** | Hiển thị real-time trên màn hình SSD1306 |
+| 🌐 **Web Dashboard** | Giao diện web hiện đại với biểu đồ Chart.js |
+| 💾 **Data Storage** | Lưu trữ SQLite với REST API |
+| 💡 **LED Control** | 5 LED báo trạng thái hệ thống |
+| 🔐 **Security Analysis** | Phân tích 15+ lỗ hổng bảo mật |
+
+---
+
+## 🔧 Phần Cứng
+
+### Sơ đồ kết nối
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    ESP32-S3 DevKit                       │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│   DHT11          LDR Module        OLED SSD1306         │
+│   ┌───┐          ┌───┐             ┌────────┐           │
+│   │VCC│→3.3V     │VCC│→3.3V        │VCC     │→3.3V      │
+│   │GND│→GND      │GND│→GND         │GND     │→GND       │
+│   │DAT│→GPIO4    │AO │→GPIO1       │SDA     │→GPIO14    │
+│   └───┘          └───┘             │SCL     │→GPIO13    │
+│                                    └────────┘           │
+│                                                          │
+│   LEDs (với điện trở 220Ω)                              │
+│   ├── Status  (Blue)   → GPIO 2                         │
+│   ├── WiFi    (Green)  → GPIO 5                         │
+│   ├── Sensor  (Yellow) → GPIO 6                         │
+│   ├── Alert   (Red)    → GPIO 7                         │
+│   └── Control (White)  → GPIO 8                         │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 🚀 Cài Đặt Nhanh
+
+### 1️⃣ Clone Repository
 ```bash
-# Sử dụng PlatformIO CLI
+git clone https://github.com/Phuc-Bang/SmartHome_IoTSecurity.git
+cd SmartHome_IoTSecurity
+```
+
+### 2️⃣ Cấu hình WiFi
+Chỉnh sửa `include/config.h`:
+```cpp
+#define WIFI_SSID     "Your_WiFi_Name"
+#define WIFI_PASSWORD "Your_WiFi_Password"
+#define API_URL       "http://YOUR_SERVER_IP:5000/api/sensor/data"
+```
+
+### 3️⃣ Upload Firmware
+```bash
+# PlatformIO
 pio run --target upload
 pio device monitor
 ```
 
-## 🔧 Khắc phục sự cố HTTP Connection
-
-### Cấu hình hiện tại (HTTP-Only Mode)
-- **WiFi Network**: "Phuc Bang"
-- **ESP32 IP**: 192.168.99.195 (expected)
-- **Server IP**: 192.168.99.85 (expected)
-- **Backend Port**: 5000
-- **Mode**: HTTP-only (MQTT disabled)
-
-### Lỗi thường gặp và cách khắc phục
-
-#### 1. "Connection reset by peer" Error
-**Nguyên nhân**: Windows Firewall chặn kết nối từ ESP32
-
-**Giải pháp**:
+### 4️⃣ Khởi động Backend
 ```bash
-# Chạy script sửa firewall (Run as Administrator)
-fix_firewall.bat
-
-# Hoặc tạm thời tắt Windows Firewall
-# Kiểm tra antivirus software
-```
-
-#### 2. "Connection refused" Error
-**Nguyên nhân**: Backend server chưa chạy
-
-**Giải pháp**:
-```bash
-# Khởi động server
-cd backend_example
-python simple_server.py
-
-# Kiểm tra server đang lắng nghe port 5000
-netstat -an | findstr :5000
-```
-
-#### 3. WiFi Connection Issues
-**Nguyên nhân**: Sai tên mạng hoặc mật khẩu
-
-**Giải pháp**:
-- Kiểm tra tên mạng: "Phuc Bang"
-- Kiểm tra mật khẩu trong `include/config.h`
-- Đảm bảo mạng 2.4GHz (không phải 5GHz)
-- Kiểm tra ESP32 nhận IP 192.168.99.195
-
-#### 4. Kiểm tra kết nối mạng
-```bash
-# Test kết nối tổng thể
-python test_network.py
-
-# Test server thủ công
-curl http://192.168.99.85:5000/api/devices
-
-# Ping ESP32 (nếu đã kết nối)
-ping 192.168.99.195
-```
-
-### Serial Output mong đợi
-```
-📶 [WiFi] Starting connection...
-✅ [WiFi] Connected successfully!
-🌐 [WiFi] IP Address: 192.168.99.195
-📊 ========== Sensor Reading ==========
-🌡️ [SENSORS] Reading data...
-✅ [DHT11] Temp: 25.5°C, Humidity: 60.2%
-💡 [LDR] Raw: 2048, Light: 50%
-📡 [HTTP] Preparing to send data...
-✅ [HTTP] Response code: 200 (SUCCESS)
-📥 [HTTP] Response: {"status":"success","device_id":"esp32_001"}
-```
-
-### Backend Server Setup
-```bash
-# Cài đặt dependencies
 cd backend_example
 pip install -r requirements.txt
-
-# Khởi động server
 python simple_server.py
-
-# Truy cập dashboard
-# http://192.168.99.85:5000
 ```
 
-## Cấu hình
+### 5️⃣ Mở Dashboard
+Truy cập: `http://localhost:5000`
 
-### Wi-Fi Settings
-Chỉnh sửa file `include/config.h`:
-```cpp
-#define WIFI_SSID "YourWiFiName"
-#define WIFI_PASSWORD "YourWiFiPassword"
+---
+
+## 📁 Cấu Trúc Dự Án
+
+```
+SmartHome_IoTSecurity/
+├── 📁 src/                    # Firmware ESP32
+│   └── main.cpp
+├── 📁 include/                # Cấu hình
+│   └── config.h
+├── 📁 backend_example/        # Flask Server
+│   ├── simple_server.py
+│   ├── templates/
+│   └── static/
+├── 📁 docs/                   # Tài liệu bảo mật
+│   ├── Detailed_Attack_Defense_Guide.md  ⭐
+│   ├── FINAL_REPORT.md
+│   ├── DEMO_SCRIPT.md
+│   ├── attack_chains/
+│   ├── countermeasures/
+│   └── security_risks/
+└── 📁 scripts/                # Scripts hỗ trợ
 ```
 
-### API & MQTT Settings
-```cpp
-#define API_URL "http://your-server:5000/api/sensor/data"
-#define MQTT_BROKER "your-mqtt-broker-ip"
+---
+
+## 📚 Tài Liệu
+
+| Tài Liệu | Mô Tả |
+|----------|-------|
+| [**Detailed Attack & Defense Guide**](docs/Detailed_Attack_Defense_Guide.md) | ⭐ Hướng dẫn chi tiết tấn công-phòng thủ với Wireshark, Nmap, Postman |
+| [**Attack Chains**](docs/attack_chains/IoT_Attack_Chains.md) | 5 chuỗi tấn công từ Entry → Impact |
+| [**Countermeasures**](docs/countermeasures/IoT_Countermeasures.md) | 8 biện pháp phòng chống |
+| [**Security Risks**](docs/security_risks/IoT_Security_Risks_Analysis.md) | 15 rủi ro theo 3 lớp |
+| [**Demo Script**](docs/DEMO_SCRIPT.md) | Script thuyết trình |
+
+---
+
+## 🔐 Phân Tích Bảo Mật
+
+### Kiến trúc 3 lớp
+
+```
+┌──────────────────┐
+│   DEVICE LAYER   │  ESP32 + Sensors + LEDs
+├──────────────────┤
+│  NETWORK LAYER   │  WiFi + HTTP/MQTT
+├──────────────────┤
+│  BACKEND LAYER   │  Flask + SQLite + Dashboard
+└──────────────────┘
 ```
 
-## Tính năng
+### Lỗ hổng chính (Có chủ đích)
 
-### Chức năng chính
-- Đọc cảm biến DHT11 (nhiệt độ, độ ẩm)
-- Đọc cảm biến ánh sáng LDR
-- Hiển thị dữ liệu trên OLED
-- Gửi dữ liệu qua HTTP API
-- Publish dữ liệu qua MQTT
-- Nhận lệnh điều khiển từ MQTT
-- Điều khiển 5 LED báo trạng thái và cảnh báo
-- LED effects: ON/OFF, Blink, Fade
+| # | Lỗ hổng | Mức độ | Layer |
+|---|---------|--------|-------|
+| 1 | Hardcoded Credentials | 🔴 Critical | Device |
+| 2 | HTTP Plaintext | 🔴 Critical | Network |
+| 3 | No API Authentication | 🔴 Critical | Backend |
+| 4 | SQL Injection | 🔴 Critical | Backend |
+| 5 | No Input Validation | 🟠 High | Backend |
 
-### LED Status Indicators
-- **Status LED (GPIO 2)**: Trạng thái hệ thống tổng quát
-- **WiFi LED (GPIO 5)**: Kết nối WiFi (Xanh lá = connected)
-- **Sensor LED (GPIO 6)**: Hoạt động cảm biến (Vàng = reading)
-- **Alert LED (GPIO 7)**: Cảnh báo (Đỏ = temperature/humidity alert)
-- **Control LED (GPIO 8)**: Điều khiển từ xa (Trắng = MQTT commands)
+### Attack vs Defense
 
-### Tính năng bảo mật (Demo)
-- Sensor data validation
-- Health monitoring
-- System information logging
-- MQTT command handling
-- LED status indicators
-- Remote LED control (VULNERABLE - no authentication)
+| Tấn Công | Phòng Thủ |
+|----------|-----------|
+| Firmware Dump | Flash Encryption |
+| HTTP Sniffing | HTTPS/TLS |
+| API Abuse | JWT Authentication |
+| SQL Injection | Parameterized Queries |
+| DoS Attack | Rate Limiting |
 
-## Lỗ hổng bảo mật (Có chủ ý)
+> 📖 Xem chi tiết: [Detailed Attack & Defense Guide](docs/Detailed_Attack_Defense_Guide.md)
 
-⚠️ **CẢNH BÁO**: Code này chứa các lỗ hổng bảo mật có chủ ý để phục vụ mục đích giáo dục!
+---
 
-### Các lỗ hổng chính:
-1. **Hardcoded Credentials**: Wi-Fi password, API keys
-2. **Plaintext Communication**: HTTP thay vì HTTPS
-3. **Unencrypted MQTT**: Port 1883 thay vì 8883 (TLS)
-4. **No Input Validation**: MQTT commands không được validate
-5. **Debug Information Exposure**: Thông tin hệ thống được log
+## 🛠️ Công Cụ Sử Dụng
 
-## Phân tích bảo mật
+| Công Cụ | Mục Đích |
+|---------|----------|
+| **Wireshark** | Phân tích HTTP traffic |
+| **Nmap** | Scan network & ports |
+| **Postman** | Test API endpoints |
+| **esptool.py** | Dump firmware |
 
-Xem file `IoT_Security_Analysis_Report.md` để có báo cáo phân tích bảo mật đầy đủ bao gồm:
-- Kiến trúc hệ thống
-- Attack surface analysis
-- Kill chain analysis
-- Biện pháp phòng chống
+---
 
-## Serial Monitor Output
+## ⚠️ Lưu Ý Quan Trọng
 
-Khi chạy, hệ thống sẽ output thông tin debug qua Serial:
-```
-========================================
-ESP32-S3 Smart Home - VULNERABLE VERSION
-Device ID: esp32_001
-========================================
+> 🎓 **Chỉ sử dụng cho mục đích giáo dục!**
 
-[WiFi] Connecting to: HomeNetwork2024
-[WARNING] Using hardcoded credentials!
-[WiFi] Connected!
-[WiFi] IP Address: 192.168.1.150
+1. ❌ Không deploy trong production
+2. ❌ Không sử dụng credentials mặc định
+3. ✅ Implement các biện pháp bảo mật trước khi triển khai thực tế
+4. ✅ Đọc kỹ tài liệu phân tích bảo mật
 
---- Sensor Reading ---
-[DHT11] Temp: 25.2°C, Humidity: 60.1%
-[LDR] Raw: 2048, Light: 50%
-[HTTP] Sending data...
-[MQTT] Publishing data...
-```
+---
 
-## Cấu trúc thư mục
-```
-ESP32_SmartHome_IoTSecurity/
-├── src/
-│   └── main.cpp                    # Code chính
-├── include/
-│   └── config.h                    # Cấu hình hệ thống
-├── platformio.ini                  # Cấu hình PlatformIO
-├── IoT_Security_Analysis_Report.md # Báo cáo phân tích bảo mật
-└── README.md                       # File này
-```
+## 📝 License
 
-## Lưu ý quan trọng
-
-1. **Chỉ sử dụng cho mục đích giáo dục**
-2. **Không deploy trong môi trường production**
-3. **Thay đổi tất cả credentials mặc định**
-4. **Implement các biện pháp bảo mật được đề xuất trong báo cáo**
-
-## License
 MIT License - Chỉ sử dụng cho mục đích giáo dục và nghiên cứu.
+
+---
+
+<div align="center">
+
+**Made with ❤️ for IoT Security Education**
+
+</div>
